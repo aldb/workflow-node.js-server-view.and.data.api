@@ -19,20 +19,13 @@
 // UNINTERRUPTED OR ERROR FREE.
 //
 
-// to avoid the EXDEV rename error, see http://stackoverflow.com/q/21071303/76173
+// To avoid the EXDEV rename error, see http://stackoverflow.com/q/21071303/76173
 process.env.TMPDIR ='tmp' ;
 //process.env ['NODE_TLS_REJECT_UNAUTHORIZED'] ='0' ; // Ignore 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' authorization error
 
-var express =require ('express') ;
-var request =require ('request') ;
-var bodyParser =require ('body-parser') ;
-var fs =require ('fs') ;
-var lmvToken =require ('./server/lmv-token') ;
-var lmvProjects =require ('./server/lmv-projects') ;
-var lmvResults =require ('./server/lmv-results') ;
-var lmvFile =require ('./server/file') ;
-var ejs =require ('./server/ejs') ;
+var app =require ('./server/server') ;
 
+<<<<<<< HEAD
 // http://garann.github.io/template-chooser/
 var app =express () ;
 app.use (bodyParser.json ()) ;
@@ -45,6 +38,8 @@ app.use ('/api', lmvResults) ;
 app.use ('/api', lmvFile) ;
 
 app.set ('port', process.env.PORT || 3000) ;
+=======
+>>>>>>> cyrillef/master
 var server =app.listen (app.get ('port'), function () {
     console.log ('Server listening on port ' + server.address ().port) ;
 }) ;

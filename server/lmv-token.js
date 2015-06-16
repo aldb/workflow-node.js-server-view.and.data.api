@@ -20,16 +20,46 @@
 //
 var express =require ('express') ;
 var request =require ('request') ;
+var bodyParser =require ('body-parser') ;
+var fs =require ('fs') ;
 var lmv =require ('./lmv') ;
 
-var seconds =1700 ; // Service returns 1799 seconds bearer token
-setInterval (lmv.Lmv.refreshToken, seconds * 1000) ;
-lmv.Lmv.refreshToken () ;
+function initializeApp () {
+	var seconds =1700 ; // Service returns 1799 seconds bearer token
+	setInterval (lmv.Lmv.refreshToken, seconds * 1000) ;
+	lmv.Lmv.refreshToken () ;
+}
+initializeApp () ;
 
 var router =express.Router () ;
 router.get ('/token', function (req, res) {
 	res.setHeader ('Content-Type', 'text/plain') ;
 	res.send (lmv.Lmv.getToken ()) ;
+}) ;
+
+router.post ('/setup', bodyParser.urlencoded ({ extended: false }), function (req, res) {
+	var key =req.body.key.trim () ;
+	var  secret =req.body.secret.trim () ;
+	var data =fs.readFile ('server/credentials_.js', 'utf-8', function (err, data) {
+		if ( err ) {
+			res.status (500).end ('No file named server/credentials_.js!') ;
+			return ;
+		}
+
+		data =data.toString ('utf8') ;
+		data =data.replace ('<replace with your consumer key>', key) ;
+		data =data.replace ('<replace with your consumer secret>', secret) ;
+
+		fs.writeFile ('server/credentials.js', data, function (err) {
+			if ( err ) {
+				res.status (500).end ('Cannot save server/credentials.js file!') ;
+				return ;
+			}
+			lmv.Lmv.refreshToken () ; // Get a token now
+			res.writeHead (301, { Location: '/' }) ;
+			res.end () ;
+		}) ;
+	}) ;
 }) ;
 
 module.exports =router ;

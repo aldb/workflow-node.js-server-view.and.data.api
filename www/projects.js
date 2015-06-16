@@ -76,12 +76,12 @@ Project.createProjectVignette =function (bucket, identifier, data) {
 	data.hasThumbnail =data.hasThumbnail || 'false' ;
 	data.progress =data.progress || 'complete' ;
 	if ( data.hasThumbnail == 'false' )
-		data.progress ='failed' ;
+        data.progress ='project' ;
 	data.success =data.success || '100%' ;
 	var name =bucket + '.' + identifier ;
 	var progressui =(data.progress != 'complete' && data.progress != 'failed' ? '<progress class="project-progress-bar" value="' + parseInt (data.success) + '" max="100"></progress>' : '') ;
 	var imageui =(data.progress == 'complete' ? name : (data.progress == 'failed' ? 'failed' : 'processing')) ;
-	var url =(data.progress != 'failed' ? '/explore/' + name : '#') ;
+	var url =(data.progress != 'failed' ? '/explore/' + bucket + '/' + identifier : '#') ;
 	$('#project-results').append (
 		'<div class="view view-first flex-item" id="' + name + '">'
 		//+	'<a href="#' + name + '" />'
@@ -98,7 +98,8 @@ Project.createProjectVignette =function (bucket, identifier, data) {
 		setTimeout (function () { Project.projectProgress (bucket, identifier) ; }, 5000) ;
 } ;
 
-Project.projectProgress =function (bucket, root) {
+Project.projectProgress =function (bucket, root, nb) {
+	nb =nb || 0 ;
 	$.ajax ({
 		url: '/api/projects/' + bucket + '/' + root + '/progress',
 		type: 'get',
@@ -109,10 +110,10 @@ Project.projectProgress =function (bucket, root) {
 		var name ='#' + bucket + '\\.' + root ;
 		if ( response.progress == 'complete' ) {
 			$(name + ' div p').text ('success (100%)') ;
-			$(name + ' div a.info').unbind ('click').text ('Explore').attr ('href', '/explore/' + bucket + '.' + root) ;
+			$(name + ' div a.info').unbind ('click').text ('Explore').attr ('href', '/explore/' + bucket + '/' + root) ;
 			$(name + ' progress').remove () ;
 
-			if ( response.hasThumbnail == "true" ) {
+			if ( response.hasThumbnail == 'true' ) {
 				$.ajax ({
 					url: '/api/results/' + bucket + '/' + root + '/thumbnail',
 					type: 'get',
@@ -121,20 +122,23 @@ Project.projectProgress =function (bucket, root) {
 					$(name + ' img').attr ('src', '/images/' + bucket + '.' + root + '.png') ;
 				}) ;
 			} else {
-				$(name + ' div p').text ('failed') ;
-				$(name + ' img').attr ('src', '/images/failed.png') ;
-				$(name + ' div a.info').attr ('href', '#') ;
-				// TODO: show error message
+                $(name + ' img').attr ('src', '/images/project.png') ;
 			}
 		} else {
-			$(name + ' progress').val (parseInt (response.progress)) ;
-			$(name + ' div p').text ('progress') ;
+			$(name + ' progress').val (parseInt (response.progress) || 0) ;
+			$(name + ' div p').text (response.progress) ;
 
 			setTimeout (function () { Project.projectProgress (bucket, root) ; }, 500) ;
 		}
 	}).fail (function (xhr, ajaxOptions, thrownError) {
 		var name ='#' + bucket + '\\.' + root ;
 		console.log ('Progress request failed!') ;
+
+		if ( nb < 2 ) {
+			setTimeout (function () { Project.projectProgress (bucket, root, ++nb) ; }, 2500) ;
+			return ;
+		}
+
 		$(name + ' progress').remove () ;
 		$(name + ' div p').text ('Failed!') ;
 		$(name + ' img').attr ('src', '/images/failed.png') ;

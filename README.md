@@ -1,7 +1,22 @@
 # workflow-node.js-server-view.and.data.api sample
 
+[![build status](https://api.travis-ci.org/cyrillef/workflow-node.js-server-view.and.data.api.png)](https://travis-ci.org/cyrillef/workflow-node.js-server-view.and.data.api)
+[![Node.js](https://img.shields.io/badge/Node.js-0.12.4-blue.svg)](https://nodejs.org/)
+[![npm](https://img.shields.io/badge/npm-2.10.1-blue.svg)](https://www.npmjs.com/)
+[![LMV](https://img.shields.io/badge/View%20%26%20Data%20API-v1.2.15-green.svg)](http://developer-autodesk.github.io/)
+![Platforms](https://img.shields.io/badge/platform-windows%20%7C%20osx%20%7C%20linux-lightgray.svg)
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://opensource.org/licenses/MIT)
+
+
 <b>Note:</b> For using this sample, you need a valid oAuth credential for the translation / extraction portion.
 Visit this [page](https://developer.autodesk.com) for instructions to get on-board.
+
+
+## Live demo at
+http://extract.autodesk.io/
+
+[![](www/img/app.png)](http://extract.autodesk.io/)
+
 
 ## Motivation
 
@@ -16,7 +31,7 @@ This sample will go through all the required steps.
 
 ## Description
 
-The workflow-node.js-server-view.and.data.api sample exercises demonstrates the Autodesk View and Data API authorization,
+The workflow-node.js-server-view.and.data.api sample exercises and demonstrates the Autodesk View and Data API authorization,
 translation, viewing processes mentioned in the Quick Start guide. It also demonstrates how to extract the 'bubbles' files
 from the Autodesk server for storing and viewing them locally.
 
@@ -28,7 +43,7 @@ In order to make use of this sample, you need to register your consumer key:
 
 * https://developer.autodesk.com > My Apps
 
-This provides the credentials to supply to the http request on the Autodesk server.
+This provides the credentials to supply to the http requests on the Autodesk server.
 
 
 ## Dependencies
@@ -52,12 +67,13 @@ This sample is dependent of Node.js and few Node.js extensions which would updat
     "util": ">= 0.10.3",
     "stream": ">= 0.0.2",
     "unirest": ">= 0.4.0",
-    "async": ">= 0.9.0",
+    "async": ">= 1.2.0",
     "url": ">= 0.10.2",
     "ejs" : ">= 2.2.4",
     "adm-zip": ">= 0.4.7",
     "archiver": ">= 0.14.3",
-    "rimraf": " >= 2.2.8"
+    "rimraf": " >= 2.2.8",
+    "moment": ">= 2.10.3"
 	```
 		
 2. flow.js - A JavaScript library providing multiple simultaneous, stable, fault-tolerant and resumable/restartable
@@ -71,38 +87,104 @@ This sample is dependent of Node.js and few Node.js extensions which would updat
 
 The sample was created using Node.js and javascript.
 
+Live version at: http://extract.autodesk.io/
+
+Developer version live at: http://extract-dev.autodesk.io/
+
+
 ### Setup
+There is 3 ways to configure the sample with your application keys, please choose one of the option at step 4. Developers,
+make sure to read [the developer notes](test/readme.md) before anything.<br />
+
 1. Download and install [Node.js](http://nodejs.org/) (that will install npm as well)
 2. Download this repo anywhere you want (the server will need to write files, so make sure you install in
-   a location where you have write permission, at least the 'tmp' and 'data' folders)
-3. Go in the ./server folder, and copy the credentials_.js into credentials.js
-4. Edit credentials.js and replace keys placeholder (ClientId and ClientSecret) with your keys
-5. Go in the sample root folder and execute 'npm install', this command will download and install
-   the required node modules automatically for you.
+   a location where you have write permission, at least the 'tmp', 'data' and '/www/extracted' folders)
+3. Execute 'npm install', this command will download and install the required node modules automatically for you.
    These modules are only required for the translation/extraction processes.<br />
    ```
    npm install
    ```
-6. You are done for the setup, launch the node server using the command '[sudo] node start.js'.
+4. Enter your credential keys to run the sample: <br />
+   a. Option 1: enter your keys in a permanent file which will never be saved in your GitHub repo. This is
+      because you do not want to expose your keys to anyone, and this is the reason why this file is never
+      saved in the repo. You can decide to save this file in a private GitHub repo by editing the .gitignore file.
+
+      * From the sample root folder, rename or copy the ./server/credentials_.js file into ./server/credentials.js<br />
+         * Windows<br />
+           ```
+            copy server/credentials_.js server/credentials.js
+            ```
+         * OSX/Linux<br />
+            ```
+            cp server/credentials_.js server/credentials.js
+            ```
+
+      * Edit credentials.js and replace keys placeholder (client_id and client_secret) with your keys. I.e.:<br />
+      &lt;replace with your consumer key&gt; <br />
+      &lt;replace with your consumer secret&gt; <br />
+
+   b. Option 2: configure the server from the browser on first usage. For this:
+      * Start the Node.js server (like at step 5)
+      * After step 5, open your favorite browser and go to [http://localhost/setup.html](http://localhost/setup.html)
+      This page will create the credentials.js file for you (like in Option 1).
+
+   c. Option 3: use system environment variables. This is actually the option you need to use for the tests suite
+      which runs on Travis-CI.
+      * Define a CONSUMERKEY and CONSUMERSECRET system variables from the console or script which will launch the
+         server.<br />
+          * Windows<br />
+            ```
+            set CONSUMERKEY=xxx
+            set CONSUMERSECRET=xxx
+            ```
+          * OSX/Linux<br />
+            ```
+            export CONSUMERKEY xxx
+            export CONSUMERSECRET xxx
+            ```
+            or <br />
+            ```
+            sudo [PORT=<port>] CONSUMERKEY=xxx CONSUMERSECRET=xxx node start.js
+            ```
+            <br />
+            Replace keys placeholder xxx with your own keys.
+
+5. You are done for the setup, launch the node server using the command '[sudo] node start.js'.
    sudo is required only on OSX and Linux.<br />
+   * Windows<br />
    ```
-   sudo node start.js
+   [set PORT=<port>]
+   node start.js
    ```
+   * OSX/Linux<br />
+   ```
+   sudo [PORT=<port>] node start.js
+   ```
+   <br />
+   <b>Note:</b> the port argument can be omitted and default to port 80. If port 80 is already in use by another
+   application (like Skype, or IIS, or Apache, ...), you can use any other free port such as 8000, 3000, etc...
+   But in the next section you would need to specify the port to use, i.e. http://localhost[:port]/
 
 ### Use of the sample
 
 Translating files / Extracting 'bubbles'
 
-1. Start your favorite browser supporting HTML5 and WEBGL and browse to [http://localhost/](http://localhost/)
+1. Start your favorite browser supporting HTML5 and WEBGL and browse to [http://localhost/](http://localhost/).<br />
+   <b>Note:</b> In case you use a different port above do not forget to include it in the URL. I.e.
+   [http://localhost:3000/](http://localhost:3000/).
 2. Drag'n Drop your files into the 'Drop area' or browse for individual files.
    Tips: start with the main file in your file has dependencies, that will build the connections automatically.
 3. If a connection is not correct, delete the connection by click on the connection line, and build a new connection
    starting from the parent 'yellow' square to the child dependency.
 4. Once all files are uploaded on your local server and connections/dependencies are correct, give a bucket name,
-   and submit the project to the Autodesk server for translating your file to a lightweight WEBGL format.
+   and submit the project to the Autodesk server for translating your file to a lightweight WEBGL format, and wait
+   for the translation to complete.
 5. After the translation completed successfully, move your mouse over the project thumbnail at the bottom of the page
-   and press the 'Explore' button,
-6. On the new page, press the 'Download' button to download your 'bubbles' files.
+   and press the 'Explore' button.
+6. On the new page, you may see either a download button or an extraction button:
+   * press the ![Download](www/img/extract.png) button to start the extraction process. When completed the button will
+     change to a ![Download](www/img/download.png) button.
+   * press the ![Download](www/img/download.png) button to download your 'bubbles' files.
 7. You are done with translation and extraction.
 
 Viewing 'bubbles' offline using Node.js
@@ -123,7 +205,7 @@ Viewing 'bubbles' offline using Node.js
 
 Viewing 'bubbles' offline using Python
 
-1. This step needs to be done only once per machine. Downlaod and install Python on your computer.
+1. This step needs to be done only once per machine. Download and install Python on your computer.
 2. Unzip the project result zip file into a folder.
 3. Download and unzip the 'Autodesk viewer engine' in the same folder.
 4. Start your local Python http server.<br />
@@ -135,16 +217,35 @@ Viewing 'bubbles' offline using Python
    [http://localhost:8000/](http://localhost:8000/) and select any of the html *.svf.* files.
 
 
-## Deploy offline viewing solutions
+## Package an offline viewing solutions
 
-### Deploy with Python
+### Package with Python
 
-Simply copy the Python directory on your CD, and launch the server via a script when your application wants to show a LMV result.
+On Windows only: simply copy the Python directory on your CD, and launch the server via a script when your application wants to show a LMV result. Make sure to set the PATH to point to your CD Python location to avoid errors.
+On OSX, Linux: Python is already installed, so you can use the default Python on these OS.
 
-### Deploy with Node/http-server
+Usage:
+```
+cd <my sample directory>
+python -m SimpleHTTPServer [port]
+```
 
-TBD
+### Package with Node/http-server
 
+on all platform you may install the http-server utility. http-server is a simple, zero-configuration command-line http server. It is powerful enough for production usage, but it's simple and hackable enough to be used for testing, local development, and learning.
+
+To  install http-server, go on your node.js console and enter the following command:
+```
+npm install http-server -g
+```
+
+Usage:
+```
+cd <my sample directory>
+http-server [path] [options]
+```
+
+[path] defaults to ./public if the folder exists, and ./ otherwise.
 
 --------
 

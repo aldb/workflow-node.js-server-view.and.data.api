@@ -20,10 +20,20 @@
 </head>
 
 <body>
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+            <a id="forkme_banner" href="https://github.com/cyrillef/workflow-node.js-server-view.and.data.api">View sources on GitHub</a>
+
+            <h1 id="project_title"><h1 id="project_title"><a href="http://developer-autodesk.github.io/">Developer Autodesk</a></h1></h1>
+            <h2 id="project_tagline">Large Model Viewer - View &amp; Data API</h2>
+
+        </header>
+    </div>
+
     <div id="project">
 
-        <hr />
-        <h3>LMV Node.js Sample</h3>
+        <br />
+        <h3>LMV Extractor Node.js Sample</h3>
         <div class="flow-error">
         Your browser, unfortunately, is not supported by Flow.js. The library requires support for
             <a href="http://www.w3.org/TR/FileAPI/">the HTML5 File API</a> along with
@@ -75,15 +85,17 @@
                     <div>
                         <label for="bucket">Bucket name: </label>
                         <input id="bucket" type="text" width="75" min="3" maxlength="63" style="text-transform: lowercase;" required
-                               placeholder="Enter a valid bucket name" pattern="(?!.*([\.])\1{1})[a-z0-9_\-]+[a-z0-9_\-\.]{1,61}[a-z0-9_\-]+"
+                               placeholder="Enter a valid bucket name" pattern="^[-_.a-z0-9]{3,128}$"
                                />
+                        <!-- AWS pattern="(?!.*([\.])\1{1})[a-z0-9_\-]+[a-z0-9_\-\.]{1,61}[a-z0-9_\-]+" -->
                         <select id="policy">
                             <option value="transient" default>transient</option>
                             <option value="temporary">temporary</option>
                             <option value="persistent">persistent</option>
                         </select>
                         &nbsp;&nbsp;
-                        <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html">
+                        <!-- a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html" -->
+                        <a href="http://developer.api.autodesk.com/documentation/v1/vs/oss.html#overview">
                             <img src="/img/info.png" width="24" align="middle" target ="_blank" /> More info on bucket name</a>
                     </div>
                     <div id="project-list" class="left">
