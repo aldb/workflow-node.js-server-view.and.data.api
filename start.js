@@ -44,7 +44,7 @@ app.use ('/api', lmvProjects) ;
 app.use ('/api', lmvResults) ;
 app.use ('/api', lmvFile) ;
 
-app.set ('port', process.env.PORT || 80) ;
+app.set ('port', process.env.PORT || 3000) ;
 var server =app.listen (app.get ('port'), function () {
     console.log ('Server listening on port ' + server.address ().port) ;
 }) ;
